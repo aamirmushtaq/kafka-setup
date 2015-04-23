@@ -1,0 +1,4 @@
+---
+- name: Configure kafka for two node cluster
+  copy: src=conf/kafka dest={{ KAFKA_HOME }} mode=0755
+

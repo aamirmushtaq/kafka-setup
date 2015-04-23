@@ -1,0 +1,26 @@
+---
+- include: tasks/install_java.yml
+- name: Download Zookeeper {{ zookeeper_version }} tarball
+  get_url: url=http://mirror.ox.ac.uk/sites/rsync.apache.org/zookeeper/zookeeper-{{ zookeeper_version }}/zookeeper-{{ zookeeper_version }}.tar.gz dest=/home/vagrant/packages/zookeeper-{{ zookeeper_version }}.tar.gz mode=0777 force=no
+  
+- name: Untar the tarball
+  shell: tar -xzvf /home/vagrant/packages/zookeeper-{{ zookeeper_version }}.tar.gz chdir=/home/vagrant/packages/ creates=/home/vagrant/packages/zookeeper-{{ zookeeper_version }}
+
+#This is an example of a template. I used it to demonstrate how jinja templating will work in this case.
+- name: Copy configuration over
+  template: src=templates/zoo.cfg.j2 dest=/home/vagrant/packages/zookeeper-{{ zookeeper_version }}/conf/  mode=0777
+  
+- name: Copy zookeeper to real destination
+  shell: mv /home/vagrant/packages/zookeeper-{{ zookeeper_version }} /usr/local/zookeeper-{{ zookeeper_version }} creates=/usr/local/zookeeper-{{ zookeeper_version }}
+  
+- name: Link /usr/local/zookeeper to this version
+  shell: ln -s zookeeper-{{ zookeeper_version }} zookeeper chdir=/usr/local creates=/usr/local/zookeeper
+
+- name: Create Data directory for zookeeper
+  file: path=/usr/local/zookeeper/data state=directory 
+  
+- name: Install the Zookeeper service handler
+  copy: src=init.d/zookeeper dest=/etc/init.d/ mode=0755
+
+- name: Run the Zookeeper service
+  service: name=zookeeper state=started enabled=yes

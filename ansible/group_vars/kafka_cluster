@@ -1,0 +1,7 @@
+---
+scala_version: 2.9.2
+scala_build_tool_ver: 0.13.8
+zookeeper_version: 3.4.6
+kafka_version: 0.8.2.1
+KAFKA_HOME: /usr/local/kafka-{{ kafka_version }}
+ZOOKEEPER_DATADIR: /usr/local/zookeeper/data

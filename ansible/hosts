@@ -1,0 +1,5 @@
+[kafka_cluster]
+192.168.1.[111:112]
+
+[kafka_cluster:vars]
+

@@ -1,0 +1,9 @@
+---
+- name: Add JRE ppa Repository to apt
+  apt_repository: repo=ppa:webupd8team/java state=present
+- name: Skipping the Oracle License check 
+  shell: echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
+- name: Install the latest JRE Bundle
+  apt: pkg=oracle-java7-installer state=latest update-cache=yes force=yes
+- name: Install JDK
+  apt: name=openjdk-7-jdk state=latest install_recommends=no

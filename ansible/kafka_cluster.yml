@@ -1,0 +1,10 @@
+---
+- hosts : kafka_cluster
+  sudo : true
+  vars_files:
+    - "group_vars/kafka_cluster"
+  tasks: 
+    - include: tasks/install_scala.yml
+    - include: tasks/install_zookeeper.yml
+    - include: tasks/install_kafka.yml
+	

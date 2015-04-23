@@ -1,0 +1,37 @@
+---
+- name: Download Kafka {{ kafka_version }}
+  get_url: url=http://apache.mirrors.tds.net/kafka/{{ kafka_version }}/kafka-{{ kafka_version }}-src.tgz  dest=/home/vagrant/packages/kafka-{{ kafka_version }}-src.tar.gz mode=0777 force=no
+  register: DownloadedKafka
+  
+- name: Unpack the downloaded tar
+  when: DownloadedKafka|success
+  shell: tar -xzvf /home/vagrant/packages/kafka-{{ kafka_version }}-src.tar.gz chdir=/home/vagrant/packages/ creates=/home/vagrant/packages/kafka-{{ kafka_version }}-src
+  
+- name: Scala Builds update
+  shell: sbt update chdir=/home/vagrant/packages/kafka-{{ kafka_version }}-src creates=/usr/local/kafka-{{ kafka_version }}
+
+- name: Scala Builds package
+  shell: sbt package chdir=/home/vagrant/packages/kafka-{{ kafka_version }}-src creates=/usr/local/kafka-{{ kafka_version }}
+  
+- name: Copy to usr local
+  shell: mv /home/vagrant/packages/kafka-{{ kafka_version }}-src /usr/local/kafka-{{ kafka_version }} creates=/usr/local/kafka-{{ kafka_version }}
+  
+- name: Symlink /usr/local/kafka to this version
+  shell: ln -s kafka-{{ kafka_version }} kafka chdir=/usr/local creates=/usr/local/kafka
+  
+- name: Update scala version in gradle properties file for fixing missing scala errors
+  replace: dest=/usr/local/kafka/gradle.properties regexp='^scalaVersion=.*$' replace=scalaVersion={{ scala_version }}
+  
+- name: Run Gradle to build Kafka
+  shell: ./gradlew jar chdir=/usr/local/kafka creates=/usr/local/kafka/core/build/
+  
+- name: Setup Kafka as service from files
+  copy: src=init.d/kafka dest=/etc/init.d/ mode=0755
+  
+- name: Replace Scala version numbers in kafka init service
+  replace: dest=/etc/init.d/kafka regexp='^export SCALA_VERSION=.*$' replace='export SCALA_VERSION={{ scala_version }}
+
+- name: Run the kafka service
+  service: name=kafka state=started enabled=yes
+- include: tasks/configure_kafka.yml
+

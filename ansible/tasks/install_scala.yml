@@ -1,0 +1,4 @@
+---
+- include: tasks/install_scala_build_tool.yml
+- name: Install Scala
+  apt: name=scala={{ scala_version }} state=present install_recommends=no

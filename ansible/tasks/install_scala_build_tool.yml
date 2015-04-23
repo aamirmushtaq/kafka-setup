@@ -1,0 +1,5 @@
+---
+- name: Download SBT {{ scala_build_tool_ver }}
+  get_url: url=http://dl.bintray.com/sbt/debian/sbt-{{ scala_build_tool_ver }}.deb dest=/home/vagrant/packages/sbt-{{ scala_build_tool_ver }}.deb mode=0777
+- name: Install SBT {{ scala_build_tool_ver }}
+  apt: deb=/tmp/sbt-{{ scala_build_tool_ver }}.deb state=installed 

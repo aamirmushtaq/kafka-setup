@@ -1,0 +1,10 @@
+tickTime=2000
+initLimit=10
+syncLimit=5
+#ZOOKEEPER_DATADIR is a variable that will be set by the group_vars variables using the jinja2 templating system.
+dataDir={{ '{{' }} ZOOKEEPER_DATADIR {{ '}}'  }}
+# the port at which the clients will connect
+clientPort=2181
+autopurge.snapRetainCount=3
+
+autopurge.purgeInterval=1
